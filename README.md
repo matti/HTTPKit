@@ -1,7 +1,7 @@
 HTTPKit
 ==========
 
-Task based, RESTful, HTTP library for iOS and OS X. Built off ConcurrentKit and NSURLSession. Tasked based is much simpler to explain in example, so check that out below. This library was mainly a learning experience of combining parts of [PromiseKit](https://github.com/mxcl/PromiseKit) and [AFNetworking](https://github.com/AFNetworking/AFNetworking) to learn more about promises and NSURLSession. That being said, it uses portions of AFNetworking code for serialization and the within ConcurrentKit, the design pattern of promiseKit. You can see that library here:
+Task based, RESTful, HTTP library for iOS and OS X. Built off ConcurrentKit and NSURLSession. Tasked based is much simpler to explain in example, so check that out below. This library was mainly a learning experience of combining parts of [PromiseKit](https://github.com/mxcl/PromiseKit) and [AFNetworking](https://github.com/AFNetworking/AFNetworking) to learn more about promises and NSURLSession. That being said, it uses portions of AFNetworking code for serialization and the within ConcurrentKit, the design pattern of promiseKit. You can see those libraries here:
 
 - [AFNetworking](https://github.com/AFNetworking/AFNetworking) 
 - [PromiseKit](https://github.com/mxcl/PromiseKit) 
