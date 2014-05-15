@@ -52,10 +52,9 @@ static NSString *backgroundIdentifierRoot = @"com.vluxe.dchttpkit.task";
     }
     __weak DCHTTPTask *weakSelf = self;
     self.asyncTask = ^(DCAsyncTaskSuccess success, DCAsyncTaskFailure failure) {
-        NSURLSession *session = [NSURLSession sharedSession];
         if(weakSelf.isDownload || weakSelf.isUpload) {
             NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfiguration:weakSelf.backgroundIdentifier];
-            session = [NSURLSession sessionWithConfiguration:configuration delegate:weakSelf delegateQueue:nil];
+            NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:weakSelf delegateQueue:nil];
             NSURLSessionTask *task = nil;
             if(weakSelf.isDownload) {
                 task = [session downloadTaskWithRequest:request];
@@ -76,6 +75,7 @@ static NSString *backgroundIdentifierRoot = @"com.vluxe.dchttpkit.task";
             weakSelf.backgroundTask = task;
             [task resume];
         } else {
+            NSURLSession *session = [NSURLSession sharedSession];
             NSURLSessionDataTask *task = [session dataTaskWithRequest:request
                                                     completionHandler:
                                           ^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -117,7 +117,19 @@ static NSString *backgroundIdentifierRoot = @"com.vluxe.dchttpkit.task";
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 -(NSString*)randomIdentifer
 {
-    return [NSString stringWithFormat:@"%@.%d%d%d",backgroundIdentifierRoot,arc4random(),arc4random(),arc4random()];
+    return [NSString stringWithFormat:@"%@.%@",backgroundIdentifierRoot,[self randomStringWithLength:14]];
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+NSString *letters = @"abcdefghijklmnopqrstuvwxyz"; //ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
+-(NSString *)randomStringWithLength:(NSInteger)len
+{
+    
+    NSMutableString *randomString = [NSMutableString stringWithCapacity: len];
+    
+    for(NSInteger i = 0; i < len; i++) {
+        [randomString appendFormat: @"%C", [letters characterAtIndex: arc4random() % [letters length]]];
+    }
+    return randomString;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 -(DCHTTPRequestSerializer*)requestSerializer
