@@ -16,6 +16,7 @@ typedef void (^DCHTTPTaskProgress)(CGFloat progress);
 
 /**
  The response headers when the request finishes.
+ @see NSHTTPURLResponse -allHeaderFields
  */
 @property(nonatomic,strong)NSDictionary *headers;
 
@@ -23,6 +24,18 @@ typedef void (^DCHTTPTaskProgress)(CGFloat progress);
  The response object that is returned after the responseSerializer has serialized/parsed it.
  */
 @property(nonatomic,strong)id responseObject;
+
+/**
+ The response mimeType.
+ @see NSURLResponse -MIMEType
+ */
+@property(nonatomic,copy)NSString *mimeType;
+
+/**
+ The response filename.
+ @see NSURLResponse -suggestedFilename
+ */
+@property(nonatomic,copy)NSString *suggestedFilename;
 
 @end
 
@@ -69,10 +82,15 @@ typedef void (^DCHTTPTaskProgress)(CGFloat progress);
 @property(nonatomic,assign,getter = isUpload)BOOL upload;
 
 /**
- This can be used to allow different serializer for different content types. 
- This differs from the responseSerializer property as it is used only for the content type defined, 
+ This is the indentifer used for any background task
+ */
+@property (nonatomic, copy,readonly) NSString *backgroundIdentifier;
+
+/**
+ This can be used to allow different serializer for different content types.
+ This differs from the responseSerializer property as it is used only for the content type defined,
  where the responseSerializer property is use for all responses not specified in this method.
- @param: responseSerializer is responseSerializer object to use for the response serializing/parsing of the contentType choosen. 
+ @param: responseSerializer is responseSerializer object to use for the response serializing/parsing of the contentType choosen.
  @param: contentType is the content type to map to the response Serializer (e.g application/json to DCJSONResponseSerializer).
  */
 -(void)setResponseSerializer:(id<DCHTTPResponseSerializerDelegate>)responseSerializer forContentType:(NSString*)contentType;
@@ -137,5 +155,13 @@ typedef void (^DCHTTPTaskProgress)(CGFloat progress);
  @return A newly initialized DCHTTPTask.
  */
 +(DCHTTPTask*)PUT:(NSString*)url parameters:(NSDictionary*)parameters;
+
+/**
+ Factory method to create a request with HTTPMethod of GET and the download property set to YES.
+ This method will download a file and return a fileURL as the responseObject.
+ @param: url is the full url you want to load (e.g. http://apple.com/test.pdf)
+ @return A newly initialized DCHTTPTask.
+ */
++(DCHTTPTask*)download:(NSString*)url;
 
 @end

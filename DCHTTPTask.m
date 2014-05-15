@@ -22,7 +22,7 @@
 
 @implementation DCHTTPTask
 
-static NSString *backgroundIdentifer = @"com.vluxe.dchttpkit.task";
+static NSString *backgroundIdentifierRoot = @"com.vluxe.dchttpkit.task";
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 - (instancetype)init
 {
@@ -47,11 +47,14 @@ static NSString *backgroundIdentifer = @"com.vluxe.dchttpkit.task";
         };
         return;
     }
+    if((self.isDownload || self.isUpload) && !_backgroundIdentifier) {
+        _backgroundIdentifier = [self randomIdentifer];
+    }
     __weak DCHTTPTask *weakSelf = self;
     self.asyncTask = ^(DCAsyncTaskSuccess success, DCAsyncTaskFailure failure) {
         NSURLSession *session = [NSURLSession sharedSession];
         if(weakSelf.isDownload || weakSelf.isUpload) {
-            NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfiguration:backgroundIdentifer];
+            NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfiguration:weakSelf.backgroundIdentifier];
             session = [NSURLSession sessionWithConfiguration:configuration delegate:weakSelf delegateQueue:nil];
             NSURLSessionTask *task = nil;
             if(weakSelf.isDownload) {
@@ -80,6 +83,8 @@ static NSString *backgroundIdentifer = @"com.vluxe.dchttpkit.task";
                                                   failure(error);
                                               } else {
                                                   DCHTTPResponse *payload = [DCHTTPResponse new];
+                                                  payload.mimeType = response.MIMEType;
+                                                  payload.suggestedFilename = response.suggestedFilename;
                                                   if([response isKindOfClass:[NSHTTPURLResponse class]])
                                                       payload.headers = [(NSHTTPURLResponse*)response allHeaderFields];
                                                   
@@ -108,6 +113,11 @@ static NSString *backgroundIdentifer = @"com.vluxe.dchttpkit.task";
             [task resume];
         }
     };
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+-(NSString*)randomIdentifer
+{
+    return [NSString stringWithFormat:@"%@.%d%d%d",backgroundIdentifierRoot,arc4random(),arc4random(),arc4random()];
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 -(DCHTTPRequestSerializer*)requestSerializer
@@ -142,6 +152,20 @@ static NSString *backgroundIdentifer = @"com.vluxe.dchttpkit.task";
     return serializer;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+-(void)setDownload:(BOOL)download
+{
+    _download = download;
+    if(!_backgroundIdentifier)
+        _backgroundIdentifier = [self randomIdentifer];
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+-(void)setUpload:(BOOL)upload
+{
+    _upload = upload;
+    if(!_backgroundIdentifier)
+        _backgroundIdentifier = [self randomIdentifer];
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #pragma mark - URL session download delegate methods
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -160,8 +184,11 @@ didFinishDownloadingToURL:(NSURL *)downloadURL
     if(self.backgroundSuccess)
     {
         DCHTTPResponse *payload = [DCHTTPResponse new];
-        if([downloadTask isKindOfClass:[NSHTTPURLResponse class]])
-            payload.headers = [(NSHTTPURLResponse*)downloadTask allHeaderFields];
+        payload.mimeType = downloadTask.response.MIMEType;
+        payload.suggestedFilename = downloadTask.response.suggestedFilename;
+        if([downloadTask.response isKindOfClass:[NSHTTPURLResponse class]]) {
+            payload.headers = [(NSHTTPURLResponse*)downloadTask.response allHeaderFields];
+        }
         payload.responseObject = downloadURL;
         self.backgroundSuccess(payload);
         self.backgroundFailure = self.backgroundSuccess = nil;
@@ -218,8 +245,11 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     if(self.backgroundSuccess)
     {
         DCHTTPResponse *payload = [DCHTTPResponse new];
-        if([dataTask.response isKindOfClass:[NSHTTPURLResponse class]])
+        payload.mimeType = dataTask.response.MIMEType;
+        payload.suggestedFilename = dataTask.response.suggestedFilename;
+        if([dataTask.response isKindOfClass:[NSHTTPURLResponse class]]) {
             payload.headers = [(NSHTTPURLResponse*)dataTask.response allHeaderFields];
+        }
         payload.responseObject = data;
         id<DCHTTPResponseSerializerDelegate>serializer = [self serializerForContentType:payload.headers[@"Content-Type"]];
         if(serializer) {
@@ -244,6 +274,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session {
+    NSLog(@"done with something...");
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 +(DCHTTPTask*)GET:(NSString*)url parameters:(NSDictionary*)parameters
@@ -287,6 +318,13 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 {
     DCHTTPTask *task = [[self class] taskWithURL:url parameters:parameters];
     task.HTTPMethod = @"PUT";
+    return task;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
++(DCHTTPTask*)download:(NSString*)url
+{
+    DCHTTPTask *task = [[self class] GET:url parameters:nil];
+    task.download = YES;
     return task;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////

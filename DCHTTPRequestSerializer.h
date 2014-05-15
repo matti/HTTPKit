@@ -12,7 +12,11 @@ typedef NS_ENUM(NSUInteger, DCHTTPRequestSerializerErrorCode) {
     DCHTTPRequestSerializerErrorCodeInvalidParameter = 1,
 };
 
-@protocol DCHTTPRequestSerializerDelegate <NSObject>
+///-------------------------------
+/// @name base request serializer
+///-------------------------------
+
+@interface DCHTTPRequestSerializer : NSObject
 
 /**
  This is used to serialize the request parameters and create a new NSURLRequest to send.
@@ -27,14 +31,6 @@ typedef NS_ENUM(NSUInteger, DCHTTPRequestSerializerErrorCode) {
                                  method:(NSString*)HTTPMethod
                              parameters:(id)parameters
                                   error:(NSError * __autoreleasing *)error;
-
-@end
-
-///-------------------------------
-/// @name Default request serializer
-///-------------------------------
-
-@interface DCHTTPRequestSerializer : NSObject<DCHTTPRequestSerializerDelegate>
 
 /**
  Add or set a header value to send with the request.

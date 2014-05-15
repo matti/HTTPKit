@@ -37,10 +37,10 @@
 static NSString * const kDCCharactersToBeEscapedInQueryString = @":/?&=;+!@#$()',*";
 
 static NSString * DCPercentEscapedQueryStringKeyFromStringWithEncoding(NSString *string, NSStringEncoding encoding) {
-    static NSString * const kAFCharactersToLeaveUnescapedInQueryStringPairKey = @"[].";
+    static NSString * const kDCCharactersToLeaveUnescapedInQueryStringPairKey = @"[].";
     
 	return (__bridge_transfer  NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (__bridge CFStringRef)string,
-                                                                                  (__bridge CFStringRef)kAFCharactersToLeaveUnescapedInQueryStringPairKey, (__bridge CFStringRef)kDCCharactersToBeEscapedInQueryString, CFStringConvertNSStringEncodingToEncoding(encoding));
+                                                                                  (__bridge CFStringRef)kDCCharactersToLeaveUnescapedInQueryStringPairKey, (__bridge CFStringRef)kDCCharactersToBeEscapedInQueryString, CFStringConvertNSStringEncodingToEncoding(encoding));
 }
 
 static NSString * DCPercentEscapedQueryStringValueFromStringWithEncoding(NSString *string, NSStringEncoding encoding) {

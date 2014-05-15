@@ -69,5 +69,6 @@
 -(DCHTTPTask*)DELETE:(NSString*)url parameters:(NSDictionary*)parameters;
 -(DCHTTPTask*)POST:(NSString*)url parameters:(NSDictionary*)parameters;
 -(DCHTTPTask*)PUT:(NSString*)url parameters:(NSDictionary*)parameters;
+-(DCHTTPTask*)download:(NSString*)resource;
 
 @end
