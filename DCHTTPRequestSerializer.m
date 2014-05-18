@@ -138,7 +138,7 @@ static NSString * DCPercentEscapedQueryStringValueFromStringWithEncoding(NSStrin
     }
     
     NSString *query = [[self class] queryStringFromParametersWithEncoding:parameters encoding:self.stringEncoding];
-    if(![self.HTTPMethodsEncodingParametersInURI containsObject:request.HTTPMethod]) {
+    if([self.HTTPMethodsEncodingParametersInURI containsObject:request.HTTPMethod]) {
         if(query) {
             request.URL = [NSURL URLWithString:[[request.URL absoluteString] stringByAppendingFormat:request.URL.query ? @"&%@" : @"?%@", query]];
         }
