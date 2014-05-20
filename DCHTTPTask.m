@@ -152,6 +152,12 @@ NSString *letters = @"abcdefghijklmnopqrstuvwxyz"; //ABCDEFGHIJKLMNOPQRSTUVWXYZ0
     self.progressBlock = block;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+-(void)setDownloadUrl:(NSURL *)downloadUrl
+{
+    _downloadUrl = downloadUrl;
+    self.download = YES;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
 -(id<DCHTTPResponseSerializerDelegate>)serializerForContentType:(NSString*)type
 {
     id<DCHTTPResponseSerializerDelegate>serializer = self.responseSerializer;
@@ -201,10 +207,28 @@ didFinishDownloadingToURL:(NSURL *)downloadURL
         if([downloadTask.response isKindOfClass:[NSHTTPURLResponse class]]) {
             payload.headers = [(NSHTTPURLResponse*)downloadTask.response allHeaderFields];
         }
-        payload.responseObject = downloadURL;
+        
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        NSURL *saveUrl = self.downloadUrl;
+        if(!self.downloadUrl) {
+            
+            NSString *fileName = payload.suggestedFilename;
+            if(!fileName)
+                fileName = [[[downloadTask originalRequest] URL] lastPathComponent];
+            saveUrl = [NSURL fileURLWithPath:[self docDirectory:fileName]];
+        }
+        [fileManager removeItemAtURL:saveUrl error:nil];
+        [fileManager moveItemAtURL:downloadURL toURL:saveUrl error:nil];
+        payload.responseObject = saveUrl;
         self.backgroundSuccess(payload);
         self.backgroundFailure = self.backgroundSuccess = nil;
     }
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+-(NSString*)docDirectory:(NSString*)name
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    return [NSString stringWithFormat:@"%@/%@",[paths objectAtIndex:0],name];
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
@@ -333,10 +357,10 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     return task;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-+(DCHTTPTask*)download:(NSString*)url
++(DCHTTPTask*)download:(NSString*)url toFile:(NSURL*)fileURL
 {
     DCHTTPTask *task = [[self class] GET:url parameters:nil];
-    task.download = YES;
+    task.downloadUrl = fileURL;
     return task;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////

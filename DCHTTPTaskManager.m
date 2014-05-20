@@ -92,10 +92,10 @@
     return task;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
--(DCHTTPTask*)download:(NSString *)resource
+-(DCHTTPTask*)download:(NSString *)resource toFile:(NSURL*)fileURL
 {
     DCHTTPTask *task = [self GET:resource parameters:nil];
-    task.download = YES;
+    task.downloadUrl = fileURL;
     return task;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -119,12 +119,16 @@
     return collect;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+//copy the serializers, that way if the new task serializer gets modified, it does not modify the entire API/Task manager.
 -(void)configTask:(DCHTTPTask*)task
 {
-    task.requestSerializer = self.requestSerializer;
-    task.responseSerializer = self.responseSerializer;
-    for(id key in self.serializers) {
-        [task setResponseSerializer:self.serializers[key] forContentType:key];
+    task.requestSerializer = [self.requestSerializer copy];
+    task.responseSerializer = [(NSObject*)self.responseSerializer copy];
+    if(self.serializers.count > 0) {
+        NSDictionary *serializers = [self.serializers copy];
+        for(id key in serializers) {
+            [task setResponseSerializer:serializers[key] forContentType:key];
+        }
     }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////

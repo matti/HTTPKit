@@ -84,19 +84,13 @@ Multi form for file upload is very simple. Simple create a provide DCHTTPUpload 
 ```objc
 DCHTTPTask *task = [DCHTTPTask GET:@"https://developer.apple.com/library/ios/documentation/Cocoa/Reference/Foundation/ObjC_classic/FoundationObjC.pdf" parameters:nil];
 task.download = YES;
+//you can also set downloadUrl for custom download locations.
+//task.downloadUrl = [NSURL fileURLWithPath:@"your custom path"];
 [task setProgress:^(CGFloat progress) {
     NSLog(@"download task progress: %f",progress);
 }];
-task.then(^(DCHTTPResponse *response){
-    NSURL *downloadURL = response.responseObject;
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSArray *URLs = [fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask];
-    NSURL *documentsDirectory = [URLs objectAtIndex:0];
-    NSURL *destinationURL = [documentsDirectory URLByAppendingPathComponent:@"FoundationObjC.pdf"];
-    [fileManager removeItemAtURL:destinationURL error:NULL];
-    [fileManager copyItemAtURL:downloadURL toURL:destinationURL error:NULL];
-    return destinationURL;
-}).thenMain(^(NSURL *destinationURL) {
+task.thenMain(^(DCHTTPResponse *response) {
+	NSURL *destinationURL = response.responseObject;
     self.documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:destinationURL];
     [self.documentInteractionController setDelegate:self];
     [self.documentInteractionController presentPreviewAnimated:YES];

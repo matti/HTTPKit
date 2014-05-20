@@ -27,7 +27,7 @@
 /**
  This is a base class for simplicity sake
  */
-@interface DCHTTPResponseSerializer : NSObject<DCHTTPResponseSerializerDelegate>
+@interface DCHTTPResponseSerializer : NSObject<DCHTTPResponseSerializerDelegate,NSCopying>
 
 /**
  The string encoding used to serialize and decode the payload with.

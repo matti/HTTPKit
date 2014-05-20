@@ -16,7 +16,7 @@ typedef NS_ENUM(NSUInteger, DCHTTPRequestSerializerErrorCode) {
 /// @name base request serializer
 ///-------------------------------
 
-@interface DCHTTPRequestSerializer : NSObject
+@interface DCHTTPRequestSerializer : NSObject <NSCopying> 
 
 /**
  This is used to serialize the request parameters and create a new NSURLRequest to send.

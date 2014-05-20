@@ -9,7 +9,7 @@
 #import "DCHTTPTask.h"
 
 /**
- This class is very useful to use as an API manager. 
+ This class is very useful to use as an API manager.
  You can configure a base URL, default requestSerializer, responseSerializer, and shared parameters to send with every request to elimiate boilerplate.
  */
 
@@ -54,7 +54,7 @@
 -(void)setResponseSerializer:(id<DCHTTPResponseSerializerDelegate>)responseSerializer forContentType:(NSString*)contentType;
 
 /**
- These are the method to create new tasks from the manager. 
+ These are the method to create new tasks from the manager.
  These all create a new DCHTTPTask with the baseURL and resource to form the overall url.
  These also does the same merge with the global and the local parameters passed in.
  The each set the HTTPMethod to the respective method name.
@@ -69,6 +69,6 @@
 -(DCHTTPTask*)DELETE:(NSString*)url parameters:(NSDictionary*)parameters;
 -(DCHTTPTask*)POST:(NSString*)url parameters:(NSDictionary*)parameters;
 -(DCHTTPTask*)PUT:(NSString*)url parameters:(NSDictionary*)parameters;
--(DCHTTPTask*)download:(NSString*)resource;
+-(DCHTTPTask*)download:(NSString*)resource toFile:(NSURL*)fileURL;
 
 @end

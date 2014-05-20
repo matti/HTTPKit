@@ -68,6 +68,20 @@ static NSString * DCPercentEscapedQueryStringValueFromStringWithEncoding(NSStrin
     return self;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+- (id)copyWithZone:(NSZone*)zone
+{
+    DCHTTPRequestSerializer *serializer = [[[self class] allocWithZone:zone] init];
+    serializer.stringEncoding = self.stringEncoding;
+    serializer.allowsCellularAccess = self.allowsCellularAccess;
+    serializer.cachePolicy = self.cachePolicy;
+    serializer.HTTPShouldHandleCookies = self.HTTPShouldHandleCookies;
+    serializer.HTTPShouldUsePipelining = self.HTTPShouldUsePipelining;
+    serializer.networkServiceType = self.networkServiceType;
+    serializer.timeoutInterval = self.timeoutInterval;
+    serializer.headers = [self.headers copyWithZone:zone];
+    return serializer;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
 -(NSURLRequest*)requestBySerializingUrl:(NSURL*)url
                                  method:(NSString*)HTTPMethod
                              parameters:(id)parameters

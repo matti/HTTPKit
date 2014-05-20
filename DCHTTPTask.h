@@ -67,12 +67,21 @@ typedef void (^DCHTTPTaskProgress)(CGFloat progress);
  */
 @property (nonatomic, copy) NSString *HTTPMethod;
 
+
 /**
  This BOOL controls if  the request needs to be done as a background downloaded.
  This ONLY needs to be set if the desired is for the request to be in the background.
  The request must be a download.
  */
 @property(nonatomic,assign,getter = isDownload)BOOL download;
+
+/**
+ This is used to set where the downloaded file should be saved to once finished.
+ This will automatically set download to YES if not already set.
+ If this property is not set, the file will be save to the root documents directory
+ with a filename generate off the response.
+ */
+@property(nonatomic,strong)NSURL *downloadUrl;
 
 /**
  This BOOL controls if  the request needs to be done as a background upload.
@@ -160,8 +169,9 @@ typedef void (^DCHTTPTaskProgress)(CGFloat progress);
  Factory method to create a request with HTTPMethod of GET and the download property set to YES.
  This method will download a file and return a fileURL as the responseObject.
  @param: url is the full url you want to load (e.g. http://apple.com/test.pdf)
+ @param: the file location URL where you want to download the file to.
  @return A newly initialized DCHTTPTask.
  */
-+(DCHTTPTask*)download:(NSString*)url;
++(DCHTTPTask*)download:(NSString*)url toFile:(NSURL*)fileURL;
 
 @end

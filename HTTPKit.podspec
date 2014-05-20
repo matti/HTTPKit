@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "HTTPKit"
-  s.version      = "0.1.1"
+  s.version      = "0.1.2"
   s.summary      = "Task based, promise like syntax, RESTful, HTTP library for iOS and OS X. Built off ConcurrentKit and NSURLSession."
   s.homepage     = "https://github.com/daltoniam/HTTPKit"
   s.license      = 'Apache License, Version 2.0'
