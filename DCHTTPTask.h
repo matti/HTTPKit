@@ -106,7 +106,7 @@ typedef void (^DCHTTPTaskProgress)(CGFloat progress);
 
 /**
  This is used to get called back on a download/upload progress.
- The progress return is between 0 and 1, just like NSProgressView or UIProgressView (your welcome).
+ The progress return is between 0 and 1, just like NSProgressView or UIProgressView.
  @param: block is the progress block to add.
  */
 -(void)setProgress:(DCHTTPTaskProgress)block;
